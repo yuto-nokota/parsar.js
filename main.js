@@ -95,9 +95,9 @@ function post_load_sarfile ( sarfile_url ) {
 }
 
 function onload_function () {
-  load_sarfile('./testdata/sar22');
-  load_sarfile('./testdata/sar23');
-  load_sarfile('./testdata/sar24');
+  load_sarfile('./testdata/centos9/sar22');
+  load_sarfile('./testdata/centos9/sar23');
+  load_sarfile('./testdata/centos9/sar24');
 }
 
 
