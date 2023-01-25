@@ -1,4 +1,4 @@
-// Copyright (c) 2021 yuto-nokota. All rights reserved.
+// Copyright (c) 2023 yuto-nokota. All rights reserved.
 
 var _GET = (function () {
   var vars = {}; 
@@ -88,16 +88,15 @@ function post_load_sarfile ( sarfile_url ) {
         data[d][headers[j]] = tmp[j];
       }
     }
-    //console.log(lines[i]);
   }
   console.log(data);
   return data;
 }
 
 function onload_function () {
-  load_sarfile('./testdata/centos9/sar22');
-  load_sarfile('./testdata/centos9/sar23');
-  load_sarfile('./testdata/centos9/sar24');
+  for ( var i=0; i<31; ++i ) {
+    load_sarfile('./testdata/centos9/sar' + ('0'+i).slice(-2) );
+  }
 }
 
 
