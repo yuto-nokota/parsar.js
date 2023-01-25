@@ -52,7 +52,7 @@ function post_load_sarfile ( sarfile_url ) {
   let lines = sarfiles[sarfile_url].split('\n');
   let tmp = lines[0].split(/\s\s*/);
   // FIXME Form correct date after 00:00- in next day.
-  const day_msec = 86400000;
+  // const day_msec = 86400000;
   console.log(sarfile_url);
   data['kernel-version'] = tmp[1];
   data['hostname']       = tmp[2].substring(1,tmp[2].length-1);
