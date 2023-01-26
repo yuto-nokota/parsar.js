@@ -94,9 +94,11 @@ function post_load_sarfile ( sarfile_url ) {
 }
 
 function onload_function () {
+  if ( !_GET['sardir'] ) return;
   for ( var i=0; i<31; ++i ) {
-    load_sarfile('./testdata/centos9/sar' + ('0'+i).slice(-2) );
+    load_sarfile(_GET['sardir'] + '/sar' + ('0'+i).slice(-2) );
   }
 }
+
 
 
