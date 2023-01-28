@@ -93,12 +93,44 @@ function post_load_sarfile ( sarfile_url ) {
   return data;
 }
 
+function create_svg_line ( x1, y1, x2, y2 ) {
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1',x1);
+  line.setAttribute('y1',y1);
+  line.setAttribute('x2',x2);
+  line.setAttribute('y2',y2);
+  line.setAttribute('stroke', '#000000');
+  line.setAttribute('stroke-width', 2);
+  line.setAttribute('stroke-dasharray', "none");
+  line.setAttribute('stroke-linejoin', 'miter'); 
+  line.setAttribute('stroke-linecap', 'butt'); //切れ目 butt round square inherit
+  line.setAttribute("opacity", 1);
+  line.setAttribute('fill-opacity', 1);
+  line.setAttribute('stroke-opacity', 1);
+  line.setAttribute('transform', 'rotate(0)');
+  return line;
+}
+
+function create_svg ( w, h ) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', w);
+  svg.setAttribute('height', h);
+  svg.setAttribute('viewbox', '0 0 ' + w + ' ' + h);
+  svg.setAttribute('style', 'background-color:#ffffff;');
+  return svg;
+}
+
+function svg_test () {
+  const svg = create_svg ( 200, 200 );
+  svg.appendChild(create_svg_line(10,20,190,150));
+  document.getElementById('debug').appendChild(svg);
+}
+
 function onload_function () {
+  svg_test();
   if ( !_GET['sardir'] ) return;
   for ( var i=0; i<31; ++i ) {
     load_sarfile(_GET['sardir'] + '/sar' + ('0'+i).slice(-2) );
   }
 }
-
-
 
