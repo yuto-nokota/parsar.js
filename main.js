@@ -103,12 +103,34 @@ function create_svg_line ( x1, y1, x2, y2, color ) {
   line.setAttribute('stroke-width', 2);
   line.setAttribute('stroke-dasharray', "none");
   line.setAttribute('stroke-linejoin', 'miter'); 
-  line.setAttribute('stroke-linecap', 'butt'); //切れ目 butt round square inherit
+  line.setAttribute('stroke-linecap', 'butt');
   line.setAttribute("opacity", 1);
   line.setAttribute('fill-opacity', 1);
   line.setAttribute('stroke-opacity', 1);
   line.setAttribute('transform', 'rotate(0)');
   return line;
+}
+
+
+function create_svg_path ( vertexes, color ) {
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  let cmd = 'M ' + vertexes[0][0] + ',' + vertexes[0][1];
+  for ( var i=1; i<vertexes.length; ++i ) {
+    cmd += ' ' + vertexes[i][0] + ',' +vertexes[i][1];
+  }
+  console.log(cmd);
+  path.setAttribute('d', cmd );
+  path.setAttribute('fill', "none" );
+  path.setAttribute('stroke', color );
+  path.setAttribute('stroke-width', 2);
+  path.setAttribute('stroke-dasharray', "none");
+  path.setAttribute('stroke-linejoin', 'miter'); 
+  path.setAttribute('stroke-linecap', 'butt');
+  path.setAttribute("opacity", 1);
+  path.setAttribute('fill-opacity', 1);
+  path.setAttribute('stroke-opacity', 1);
+  path.setAttribute('transform', 'rotate(0)');
+  return path;
 }
 
 function create_svg ( w, h ) {
@@ -122,9 +144,12 @@ function create_svg ( w, h ) {
 
 function svg_test () {
   const svg = create_svg ( 200, 200 );
-  svg.appendChild(create_svg_line(10,20,190,150,'#000000'));
+  svg.appendChild(create_svg_line(10,20,190,150,'#00ff00'));
+  svg.appendChild(create_svg_line(190,150,30,50,'#0000ff'));
+  svg.appendChild(create_svg_path([[20,10],[20,50],[70,50],[100,180]],'#ff0000'));
   document.getElementById('debug').appendChild(svg);
 }
+
 
 function onload_function () {
   svg_test();
