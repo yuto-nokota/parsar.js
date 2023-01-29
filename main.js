@@ -93,12 +93,12 @@ function post_load_sarfile ( sarfile_url ) {
   return data;
 }
 
-function create_svg_line ( x1, y1, x2, y2, color ) {
+function create_svg_line ( from, to, color ) {
   const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  line.setAttribute('x1',x1);
-  line.setAttribute('y1',y1);
-  line.setAttribute('x2',x2);
-  line.setAttribute('y2',y2);
+  line.setAttribute('x1',from[0]);
+  line.setAttribute('y1',from[1]);
+  line.setAttribute('x2',to[0]);
+  line.setAttribute('y2',to[1]);
   line.setAttribute('stroke', color );
   line.setAttribute('stroke-width', 2);
   line.setAttribute('stroke-dasharray', "none");
@@ -110,7 +110,6 @@ function create_svg_line ( x1, y1, x2, y2, color ) {
   line.setAttribute('transform', 'rotate(0)');
   return line;
 }
-
 
 function create_svg_path ( vertexes, color ) {
   const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -133,6 +132,23 @@ function create_svg_path ( vertexes, color ) {
   return path;
 }
 
+function create_svg_text ( position, string, color, attributes ) {
+  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  text.setAttribute('x',position[0]);
+  text.setAttribute('y',position[1]);
+  text.setAttribute('stroke', "none" );
+  text.setAttribute('fill', color );
+  text.setAttribute("opacity", 1);
+  text.setAttribute('fill-opacity', 1);
+  text.setAttribute('stroke-opacity', 1);
+  text.setAttribute('transform', 'rotate(0)');
+  for ( var key in attributes ) {
+    text.setAttribute(key, attributes[key] );
+  }
+  text.textContent = string;
+  return text;
+}
+
 function create_svg ( w, h ) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('width', w);
@@ -142,14 +158,37 @@ function create_svg ( w, h ) {
   return svg;
 }
 
-function svg_test () {
-  const svg = create_svg ( 200, 200 );
-  svg.appendChild(create_svg_line(10,20,190,150,'#00ff00'));
-  svg.appendChild(create_svg_line(190,150,30,50,'#0000ff'));
-  svg.appendChild(create_svg_path([[20,10],[20,50],[70,50],[100,180]],'#ff0000'));
-  document.getElementById('debug').appendChild(svg);
+function minmax ( x ) {
+  var min = x[0];
+  var max = x[0];
+  for ( var i=1; i<x.length; ++i ) {
+    if ( x[i] > max ) max = x[i];
+    if ( x[i] < min ) min = x[i];
+  }
+  return [ min, max ];
 }
 
+function create_graph_line ( data, from, to, w, h, color ) {
+  const scale = 0.9;
+  var rateX =   w * scale / ( to[0] - from[0] );
+  var rateY = - h * scale / ( to[1] - from[1] );
+  var offsetX = w * ( 1 - scale ) / 2;
+  var offsetY = h * ( 1 + scale ) / 2;
+  return create_svg_path( data.map(x=>[x[0]*rateX+offsetX,x[1]*rateY+offsetY]),color);
+}
+
+function svg_test () {
+  const svg = create_svg ( 200, 200 );
+  //svg.appendChild(create_svg_line([10,20],[190,150],'#00ff00'));
+  //svg.appendChild(create_svg_line([190,150],[30,50],'#0000ff'));
+  //svg.appendChild(create_svg_path([[20,10],[20,50],[70,50],[100,180]],'#ff0000'));
+  svg.appendChild(create_graph_line([[1,3],[2,10],[3,2],[4,8]],[0,0],[5,12],200,200,'#00ffff'));
+  svg.appendChild(create_svg_line([10,190],[190,190],'#000000'));
+  svg.appendChild(create_svg_line([10,190],[10,10],'#000000'));
+  svg.appendChild(create_svg_text([190,190],'x','#000000'));
+  svg.appendChild(create_svg_text([10,10],'y','#000000',{'font-size':'20px'}));
+  document.getElementById('debug').appendChild(svg);
+}
 
 function onload_function () {
   svg_test();
