@@ -93,13 +93,13 @@ function post_load_sarfile ( sarfile_url ) {
   return data;
 }
 
-function create_svg_line ( x1, y1, x2, y2 ) {
+function create_svg_line ( x1, y1, x2, y2, color ) {
   const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
   line.setAttribute('x1',x1);
   line.setAttribute('y1',y1);
   line.setAttribute('x2',x2);
   line.setAttribute('y2',y2);
-  line.setAttribute('stroke', '#000000');
+  line.setAttribute('stroke', color );
   line.setAttribute('stroke-width', 2);
   line.setAttribute('stroke-dasharray', "none");
   line.setAttribute('stroke-linejoin', 'miter'); 
@@ -122,7 +122,7 @@ function create_svg ( w, h ) {
 
 function svg_test () {
   const svg = create_svg ( 200, 200 );
-  svg.appendChild(create_svg_line(10,20,190,150));
+  svg.appendChild(create_svg_line(10,20,190,150,'#000000'));
   document.getElementById('debug').appendChild(svg);
 }
 
