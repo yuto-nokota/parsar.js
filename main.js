@@ -31,6 +31,7 @@ function get2url () {
 }
 
 let sarfiles={};
+let sardata={};
 function load_sarfile ( sarfile_url ) {
   var xhr = new XMLHttpRequest();
   xhr.responseType = "text"
@@ -38,7 +39,7 @@ function load_sarfile ( sarfile_url ) {
   xhr.onload = function () {
     sarfiles[sarfile_url] = xhr.responseText;
     if ( xhr.status == '200' ) {
-      post_load_sarfile ( sarfile_url );
+      sardata[sarfile_url] = post_load_sarfile( sarfile_url );
     } else {
       console.log('[INFO]'+xhr.status+' in load_sarfile('+sarfile_url+')');
     }
@@ -53,7 +54,6 @@ function post_load_sarfile ( sarfile_url ) {
   let tmp = lines[0].split(/\s\s*/);
   // FIXME Form correct date after 00:00- in next day.
   // const day_msec = 86400000;
-  console.log(sarfile_url);
   data['kernel-version'] = tmp[1];
   data['hostname']       = tmp[2].substring(1,tmp[2].length-1);
   data['date']           = tmp[3];
@@ -89,7 +89,6 @@ function post_load_sarfile ( sarfile_url ) {
       }
     }
   }
-  console.log(data);
   return data;
 }
 
@@ -193,6 +192,8 @@ function svg_test () {
   svg.appendChild(create_svg_text([190,190],'x','#000000'));
   svg.appendChild(create_svg_text([10,10],'y','#000000',{'font-size':'20px'}));
   document.getElementById('debug').appendChild(svg);
+  var svg = create_svg ( 200, 200 );
+  document.getElementById('debug').appendChild(svg);
 }
 
 function onload_function () {
@@ -201,5 +202,7 @@ function onload_function () {
   for ( var i=0; i<31; ++i ) {
     load_sarfile(_GET['sardir'] + '/sar' + ('0'+i).slice(-2) );
   }
+  setTimeout(console.log('------'),1000);
+  setTimeout(console.log(sardata),5000);
 }
 
