@@ -117,7 +117,6 @@ function create_svg_path ( vertexes, color ) {
   for ( var i=1; i<vertexes.length; ++i ) {
     cmd += ' ' + vertexes[i][0] + ',' +vertexes[i][1];
   }
-  console.log(cmd);
   path.setAttribute('d', cmd );
   path.setAttribute('fill', "none" );
   path.setAttribute('stroke', color );
@@ -174,15 +173,21 @@ function create_graph_line ( data, from, to, w, h, color ) {
   var rateY = - h * scale / ( to[1] - from[1] );
   var offsetX = w * ( 1 - scale ) / 2;
   var offsetY = h * ( 1 + scale ) / 2;
-  return create_svg_path( data.map(x=>[x[0]*rateX+offsetX,x[1]*rateY+offsetY]),color);
+  return create_svg_path( data.map(x=>[(x[0]-from[0])*rateX+offsetX,
+                                       (x[1]-from[1])*rateY+offsetY]
+                                  ),color);
 }
 
 function svg_test () {
-  const svg = create_svg ( 200, 200 );
-  //svg.appendChild(create_svg_line([10,20],[190,150],'#00ff00'));
-  //svg.appendChild(create_svg_line([190,150],[30,50],'#0000ff'));
-  //svg.appendChild(create_svg_path([[20,10],[20,50],[70,50],[100,180]],'#ff0000'));
-  svg.appendChild(create_graph_line([[1,3],[2,10],[3,2],[4,8]],[0,0],[5,12],200,200,'#00ffff'));
+  var svg = create_svg ( 200, 200 );
+  svg.appendChild(create_svg_line([10,20],[190,150],'#00ff00'));
+  svg.appendChild(create_svg_line([190,150],[30,50],'#0000ff'));
+  svg.appendChild(create_svg_path([[20,10],[20,50],[70,50],[100,180]],'#ff0000'));
+  document.getElementById('debug').appendChild(svg);
+  var svg = create_svg ( 200, 200 );
+  svg.appendChild(create_graph_line([[-1,2],[0,-5],[1,3],[2,10],[3,2],[4,8]],[-2,-6],[5,12],200,200,'#00ffff'));
+  svg.appendChild(create_graph_line([[0,-100],[0,100]],[-2,-6],[5,12],200,200,'#cccccc'));
+  svg.appendChild(create_graph_line([[-100,0],[100,0]],[-2,-6],[5,12],200,200,'#cccccc'));
   svg.appendChild(create_svg_line([10,190],[190,190],'#000000'));
   svg.appendChild(create_svg_line([10,190],[10,10],'#000000'));
   svg.appendChild(create_svg_text([190,190],'x','#000000'));
