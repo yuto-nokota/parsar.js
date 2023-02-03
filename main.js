@@ -76,16 +76,17 @@ function post_load_sarfile ( sarfile_url ) {
     // TODO How can i parse average?
     if ( tmp[0] == 'Average:' ) continue;
     var d = new Date(Date.parse(data['date'] + ' ' + tmp[0]))
-    if ( !data[d] ) data[d] = {};
     if ( headers[1].search(/CPU|DEV|IFACE/) >= 0 ) {
-      var subkey = headers[1] + '-' + tmp[1];
-      if ( !data[d][subkey] ) data[d][subkey] = {};
+      var subheader = headers[1] + '-' + tmp[1];
       for ( var j=2; j<headers.length; ++j ) {
-        data[d][subkey][headers[j]] = tmp[j];
+        if ( !data[headers[j]] ) data[headers[j]] = {};
+        if ( !data[headers[j]][subheader] ) data[headers[j]][subheader] = [];
+        data[headers[j]][subheader].push([d,tmp[j]]);
       }
     } else {
       for ( var j=1; j<headers.length; ++j ) {
-        data[d][headers[j]] = tmp[j];
+        if ( !data[headers[j]] ) data[headers[j]] = [];
+        data[headers[j]].push([d,tmp[j]]);
       }
     }
   }
