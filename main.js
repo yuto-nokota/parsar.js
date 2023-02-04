@@ -152,7 +152,7 @@ function create_svg ( w, h ) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('width', w);
   svg.setAttribute('height', h);
-  svg.setAttribute('viewbox', '0 0 ' + w + ' ' + h);
+  svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
   svg.setAttribute('style', 'background-color:#ffffff;');
   return svg;
 }
