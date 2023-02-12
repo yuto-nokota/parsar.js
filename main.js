@@ -48,17 +48,18 @@ function load_sarfile ( sarfile_url ) {
 }
 
 function post_load_sarfile ( sarfile_url ) {
-  let data={'restarts':[]};
+  let dateSet = {};
+  let data={ 'meta':{}, 'body':{}, 'restarts':[] };
   let headers=null;
   let lines = sarfiles[sarfile_url].split('\n');
   let tmp = lines[0].split(/\s\s*/);
   // FIXME Form correct date after 00:00- in next day.
   // const day_msec = 86400000;
-  data['kernel-version'] = tmp[1];
-  data['hostname']       = tmp[2].substring(1,tmp[2].length-1);
-  data['date']           = tmp[3];
-  data['architecture']   = tmp[4];
-  data['CPUs']           = tmp[5].substring(1);
+  data['meta']['kernel-version'] = tmp[1];
+  data['meta']['hostname']       = tmp[2].substring(1,tmp[2].length-1);
+  data['meta']['date']           = tmp[3];
+  data['meta']['architecture']   = tmp[4];
+  data['meta']['CPUs']           = tmp[5].substring(1);
   for ( var i=1; i<lines.length; ++i ) {
     if ( lines[i].search(/^$/) >= 0 ) {
       if ( lines[i+1] ) {
@@ -75,21 +76,23 @@ function post_load_sarfile ( sarfile_url ) {
     tmp = lines[i].split(/\s\s*/);
     // TODO How can i parse average?
     if ( tmp[0] == 'Average:' ) continue;
-    var d = new Date(Date.parse(data['date'] + ' ' + tmp[0]))
+    var d = new Date(Date.parse(data['meta']['date'] + ' ' + tmp[0]))
+    dateSet[d] = 1;
     if ( headers[1].search(/CPU|DEV|IFACE/) >= 0 ) {
       var subheader = headers[1] + '-' + tmp[1];
       for ( var j=2; j<headers.length; ++j ) {
-        if ( !data[headers[j]] ) data[headers[j]] = {};
-        if ( !data[headers[j]][subheader] ) data[headers[j]][subheader] = [];
-        data[headers[j]][subheader].push([d,tmp[j]]);
+        if ( !data['body'][headers[j]] ) data['body'][headers[j]] = {};
+        if ( !data['body'][headers[j]][subheader] ) data['body'][headers[j]][subheader] = [];
+        data['body'][headers[j]][subheader].push([d,tmp[j]]);
       }
     } else {
       for ( var j=1; j<headers.length; ++j ) {
-        if ( !data[headers[j]] ) data[headers[j]] = [];
-        data[headers[j]].push([d,tmp[j]]);
+        if ( !data['body'][headers[j]] ) data['body'][headers[j]] = [];
+        data['body'][headers[j]].push([d,tmp[j]]);
       }
     }
   }
+  data['meta']['date-list']=Object.keys(dateSet).sort();
   return data;
 }
 
@@ -167,15 +170,9 @@ function minmax ( x ) {
   return [ min, max ];
 }
 
-function create_graph_line ( data, from, to, w, h, color ) {
-  const scale = 0.9;
-  var rateX =   w * scale / ( to[0] - from[0] );
-  var rateY = - h * scale / ( to[1] - from[1] );
-  var offsetX = w * ( 1 - scale ) / 2;
-  var offsetY = h * ( 1 + scale ) / 2;
-  return create_svg_path( data.map(x=>[(x[0]-from[0])*rateX+offsetX,
-                                       (x[1]-from[1])*rateY+offsetY]
-                                  ),color);
+function create_graph_line ( data, color ) {
+  // TODO standardization needed
+  return create_svg_path( data.map(x=>[x[0].getTime(),-x[1]]),color);
 }
 
 function svg_test () {
@@ -185,13 +182,17 @@ function svg_test () {
   svg.appendChild(create_svg_path([[20,10],[20,50],[70,50],[100,180]],'#ff0000'));
   document.getElementById('debug').appendChild(svg);
   var svg = create_svg ( 200, 200 );
-  svg.appendChild(create_graph_line([[-1,2],[0,-5],[1,3],[2,10],[3,2],[4,8]],[-2,-6],[5,12],200,200,'#00ffff'));
-  svg.appendChild(create_graph_line([[0,-100],[0,100]],[-2,-6],[5,12],200,200,'#cccccc'));
-  svg.appendChild(create_graph_line([[-100,0],[100,0]],[-2,-6],[5,12],200,200,'#cccccc'));
-  svg.appendChild(create_svg_line([10,190],[190,190],'#000000'));
-  svg.appendChild(create_svg_line([10,190],[10,10],'#000000'));
-  svg.appendChild(create_svg_text([190,190],'x','#000000'));
-  svg.appendChild(create_svg_text([10,10],'y','#000000',{'font-size':'20px'}));
+  svg.appendChild(create_svg_path(
+    [[-1,2],[0,-5],[1,3],[2,10],[3,2],[4,8]].map
+    (
+      x=>[x[0]*10,-x[1]*10]
+    ),'#00ffff')
+  );
+  svg.setAttribute('viewBox','-100 -100 200 200');
+  svg.appendChild(create_svg_line([0,-100],[0,100],'#000000'));
+  svg.appendChild(create_svg_line([-100,0],[100,0],'#000000'));
+  svg.appendChild(create_svg_text([80,10],'x','#000000'));
+  svg.appendChild(create_svg_text([10,-80],'y','#000000',{'font-size':'20px'}));
   document.getElementById('debug').appendChild(svg);
   var svg = create_svg ( 200, 200 );
   document.getElementById('debug').appendChild(svg);
